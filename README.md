@@ -36,17 +36,20 @@ wizelit-mcp/
 ## Setup
 
 1. **Install dependencies**:
+
    ```bash
    uv pip install -e .
    ```
 
 2. **Configure environment**:
+
    ```bash
    cp .env.template .env
    # Edit .env with your credentials
    ```
 
 3. **Start MCP servers**:
+
    ```bash
    # Terminal 1 - Code Scout
    python mcp_servers/code-scout/server.py
@@ -63,12 +66,14 @@ wizelit-mcp/
 ## Environment Variables
 
 ### Required
+
 - `AWS_ACCESS_KEY_ID`: AWS access key
 - `AWS_SECRET_ACCESS_KEY`: AWS secret key
 - `AWS_REGION`: AWS region (default: us-east-1)
 - `CHAT_MODEL_ID`: Bedrock model ID (default: anthropic.claude-3-haiku-20240307-v1:0)
 
 ### Optional
+
 - `GITHUB_TOKEN`: GitHub token for private repos
 - `REDIS_URL`: Redis URL for log streaming (default: redis://localhost:6379)
 - `ENABLE_LOG_STREAMING`: Enable streaming logs (default: true)
@@ -77,13 +82,17 @@ wizelit-mcp/
 ## Usage
 
 ### Code Analysis
+
 Ask the AI to analyze code:
+
 - "Find all usages of `MyClass` in https://github.com/owner/repo"
 - "Search for 'TODO' in my project"
 - "Analyze the impact of changing function `process_data`"
 
 ### Code Refactoring
+
 Ask the AI to refactor code:
+
 - "Refactor this code to use type hints: [paste code]"
 - "Improve this function's error handling: [paste code]"
 - "Rewrite this using Pydantic models: [paste code]"
@@ -99,11 +108,13 @@ Ask the AI to refactor code:
 ## Development
 
 ### Running Tests
+
 ```bash
 pytest
 ```
 
 ### Code Formatting
+
 ```bash
 black .
 ruff check .
