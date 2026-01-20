@@ -7,7 +7,6 @@ This repo now ships only the two FastMCP servers (no Chainlit UI). Point the Wiz
 - Python 3.12+
 - AWS credentials for Bedrock
 - Redis (optional, for refactoring log streaming)
-- PostgreSQL (optional, for job persistence)
 
 ## Install
 
@@ -25,7 +24,7 @@ cp .env.template .env
 Key env vars:
 
 - Required: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `CHAT_MODEL_ID`
-- Optional: `GITHUB_TOKEN`, `REDIS_URL`, `ENABLE_LOG_STREAMING`, `POSTGRES_*`, `CREWAI_MODEL`, `CREWAI_TIMEOUT_SECONDS`, `JOB_LOG_TAIL`
+- Optional: `GITHUB_TOKEN`, `REDIS_URL`, `ENABLE_LOG_STREAMING`, `CREWAI_MODEL`, `CREWAI_TIMEOUT_SECONDS`, `JOB_LOG_TAIL`
 
 ## Run
 

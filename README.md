@@ -75,7 +75,6 @@ The Wizelit UI (in the `wizelit` repo) should connect to these endpoints using F
 
 - `GITHUB_TOKEN`: access private repos
 - `REDIS_URL`, `ENABLE_LOG_STREAMING`: streaming logs for refactoring jobs
-- `POSTGRES_*`: enable persistence via `DatabaseManager`
 - `CREWAI_MODEL`, `CREWAI_TIMEOUT_SECONDS`: override CrewAI execution settings
 - `JOB_LOG_TAIL`: number of lines returned when tailing job logs
 
