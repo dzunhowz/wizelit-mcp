@@ -27,7 +27,7 @@ echo "✅ Environment file found"
 echo ""
 
 # Check if dependencies are installed
-if ! uv run python -c "import chainlit" 2>/dev/null; then
+if ! uv run python -c "import wizelit_sdk" 2>/dev/null; then
     echo "❌ Dependencies not installed!"
     echo ""
     echo "Please install dependencies:"
@@ -41,12 +41,11 @@ fi
 echo "✅ Dependencies installed"
 echo ""
 
-echo "🚀 Starting Wizelit MCP..."
+echo "🚀 Starting Wizelit MCP servers..."
 echo ""
 echo "This will start:"
 echo "  1. Code Scout MCP Server (port 1338)"
 echo "  2. Refactoring Agent MCP Server (port 1337)"
-echo "  3. Chainlit App (port 9191)"
 echo ""
 echo "Press Ctrl+C to stop all services"
 echo ""

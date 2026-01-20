@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cleanup Script for Wizelit MCP
-# Kills stale Chainlit and MCP server processes
+# Kills stale MCP server processes
 
 echo "🧹 Cleaning up stale processes..."
 echo ""
@@ -38,14 +38,12 @@ kill_by_name() {
 
 echo "Checking ports:"
 echo "---------------"
-kill_port 9191 "Chainlit"
 kill_port 1337 "Refactoring Agent"
 kill_port 1338 "Code Scout"
 
 echo ""
 echo "Checking process names:"
 echo "------------------------"
-kill_by_name "chainlit run main.py" "Chainlit"
 kill_by_name "mcp_servers/code-scout/server.py" "Code Scout"
 kill_by_name "mcp_servers/refactoring-agent/main.py" "Refactoring Agent"
 
@@ -53,4 +51,4 @@ echo ""
 echo "✨ Cleanup complete!"
 echo ""
 echo "Verify all ports are free:"
-lsof -i:9191 -i:1337 -i:1338 2>/dev/null || echo "  ✅ All ports (9191, 1337, 1338) are free"
+lsof -i:1337 -i:1338 2>/dev/null || echo "  ✅ All ports (1337, 1338) are free"

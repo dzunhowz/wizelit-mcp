@@ -3,8 +3,8 @@
 help:
 	@echo "Available commands:"
 	@echo "  make install    - Install dependencies"
-	@echo "  make run        - Run the Chainlit app"
-	@echo "  make dev        - Run in development mode"
+	@echo "  make run        - Start both MCP servers"
+	@echo "  make dev        - Start both MCP servers (watch mode not required)"
 	@echo "  make servers    - Start all MCP servers"
 	@echo "  make clean      - Clean cache and temp files"
 	@echo "  make test       - Run tests"
@@ -14,10 +14,10 @@ install:
 	uv pip install -e .
 
 run:
-	chainlit run main.py
+	./start.sh
 
 dev:
-	chainlit run main.py -w
+	./start.sh
 
 servers:
 	@echo "Starting MCP servers..."

@@ -1,158 +1,100 @@
 # Wizelit MCP
 
-A minimal Wizelit project powered by **wizelit-sdk**, featuring two MCP servers integrated with Chainlit:
+FastMCP bundle exposing two MCP servers for the Wizelit UI. No UI is shipped here—this repo only runs the servers that Wizelit connects to.
 
-- **Code Scout**: Fast code analysis and symbol tracking
-- **Refactoring Agent**: AI-powered code refactoring using CrewAI
+- **Code Scout**: Fast code analysis (symbol usage, grep, dependency graph)
+- **Refactoring Agent**: Background refactoring jobs with optional log streaming
 
 ## Architecture
 
 ```
 wizelit-mcp/
-├── main.py                  # Chainlit app entry point
-├── agent.py                 # Agent runtime connecting to MCP servers
-├── graph.py                 # LangGraph agent definition
-├── database.py              # Optional database manager
+├── agent.py                 # (Optional) utility runtime used by the Wizelit UI
+├── graph.py                 # LangGraph definition used by Wizelit UI
+├── database.py              # Optional database manager (persistence)
 ├── code_scout/              # Code analysis module
 │   ├── code_scout.py
 │   ├── github_helper.py
 │   └── github_cache.py
 ├── mcp_servers/
-│   ├── code-scout/          # Code Scout MCP server
+│   ├── code-scout/          # Code Scout MCP server (port 1338, SSE)
 │   │   └── server.py
-│   └── refactoring-agent/   # Refactoring MCP server
+│   └── refactoring-agent/   # Refactoring MCP server (port 1337, SSE)
 │       └── main.py
 └── utils/
-    └── bedrock_config.py    # AWS Bedrock configuration
+    └── bedrock_config.py    # AWS Bedrock configuration helpers
 ```
 
 ## Prerequisites
 
 - Python 3.12+
-- AWS Credentials (for Bedrock)
-- Redis (optional, for log streaming)
-- PostgreSQL (optional, for persistence)
+- AWS credentials for Bedrock
+- Redis (optional, for refactoring log streaming)
+- PostgreSQL (optional, for job persistence via `DatabaseManager`)
 
 ## Setup
 
-1. **Install dependencies**:
+1. **Install dependencies**
 
    ```bash
    uv pip install -e .
    ```
 
-2. **Configure environment**:
+2. **Configure environment**
 
    ```bash
    cp .env.template .env
    # Edit .env with your credentials
    ```
 
-3. **Start MCP servers**:
+3. **Start the MCP servers**
 
    ```bash
-   # Terminal 1 - Code Scout
-   python mcp_servers/code-scout/server.py
-
-   # Terminal 2 - Refactoring Agent
-   python mcp_servers/refactoring-agent/main.py
+   ./start.sh           # starts both servers (ports 1337, 1338)
    ```
 
-4. **Run Chainlit app**:
+   Or start them manually in two terminals:
+
    ```bash
-   chainlit run main.py
+   python mcp_servers/code-scout/server.py          # port 1338
+   python mcp_servers/refactoring-agent/main.py     # port 1337
    ```
+
+## Integration Endpoints
+
+- Refactoring Agent SSE: `http://127.0.0.1:1337/sse`
+- Code Scout SSE: `http://127.0.0.1:1338/sse`
+
+The Wizelit UI (in the `wizelit` repo) should connect to these endpoints using FastMCP.
 
 ## Environment Variables
 
-### Authentication (Required for login/logout)
-
-- `CHAINLIT_AUTH_SECRET`: Secret key for Chainlit authentication (generate one in production)
-- `OAUTH_GOOGLE_CLIENT_ID`: Google OAuth client ID
-- `OAUTH_GOOGLE_CLIENT_SECRET`: Google OAuth client secret
-
 ### Required
 
-- `AWS_ACCESS_KEY_ID`: AWS access key
-- `AWS_SECRET_ACCESS_KEY`: AWS secret key
-- `AWS_REGION`: AWS region (default: us-east-1)
-- `CHAT_MODEL_ID`: Bedrock model ID (default: anthropic.claude-3-haiku-20240307-v1:0)
+- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION` (default: `us-east-1`)
+- `CHAT_MODEL_ID` (default: `anthropic.claude-3-haiku-20240307-v1:0`)
 
 ### Optional
 
-- `GITHUB_TOKEN`: GitHub token for private repos
-- `REDIS_URL`: Redis URL for log streaming (default: redis://localhost:6379)
-- `ENABLE_LOG_STREAMING`: Enable streaming logs (default: true)
-- `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_DB`: PostgreSQL config
-
-## Usage
-
-### Code Analysis
-
-Ask the AI to analyze code:
-
-- "Find all usages of `MyClass` in https://github.com/owner/repo"
-- "Search for 'TODO' in my project"
-- "Analyze the impact of changing function `process_data`"
-
-### Code Refactoring
-
-Ask the AI to refactor code:
-
-- "Refactor this code to use type hints: [paste code]"
-- "Improve this function's error handling: [paste code]"
-- "Rewrite this using Pydantic models: [paste code]"
-
-## Authentication
-
-The application now supports user login/logout via Google OAuth. Users with `@wizeline.com` email addresses can authenticate:
-
-1. **Google OAuth**: Users can sign in with their Google account
-2. **Domain Validation**: Only users with `wizeline.com` domain are allowed access
-3. **Persistent Sessions**: User sessions are stored in PostgreSQL database (if configured)
-4. **Logout**: Users can logout from the user menu in the top-right corner
-
-### Setting up OAuth
-
-1. Create a Google OAuth application at [Google Cloud Console](https://console.cloud.google.com/)
-2. Get your Client ID and Client Secret
-3. Add to `.env`:
-   ```
-   OAUTH_GOOGLE_CLIENT_ID=your_client_id
-   OAUTH_GOOGLE_CLIENT_SECRET=your_client_secret
-   ```
-4. Configure PostgreSQL for session persistence (optional but recommended):
-   ```
-   POSTGRES_HOST=localhost
-   POSTGRES_USER=your_user
-   POSTGRES_PASSWORD=your_password
-   POSTGRES_DB=wizelit_mcp
-   POSTGRES_PORT=5432
-   ```
-
-## Key Features
-
-- **Unified Interface**: Single Chainlit chat interface for both analysis and refactoring
-- **Real-time Streaming**: Watch refactoring jobs in real-time via Redis
-- **GitHub Integration**: Analyze GitHub repositories directly
-- **AWS Bedrock**: Powered by Claude models via AWS Bedrock
-- **MCP Architecture**: Modular server architecture using Model Context Protocol
-- **User Authentication**: Google OAuth with domain-based access control
+- `GITHUB_TOKEN`: access private repos
+- `REDIS_URL`, `ENABLE_LOG_STREAMING`, `LOG_STREAM_TIMEOUT_SECONDS`: streaming logs for refactoring jobs
+- `POSTGRES_*`: enable persistence via `DatabaseManager`
+- `CREWAI_MODEL`, `CREWAI_TIMEOUT_SECONDS`: override CrewAI execution settings
+- `JOB_LOG_TAIL`: number of lines returned when tailing job logs
 
 ## Development
 
-### Running Tests
+- Start servers: `make run`
+- Install deps: `make install`
+- Run tests: `pytest`
+- Format: `black .` and `ruff check .`
 
-```bash
-pytest
-```
+## Troubleshooting
 
-### Code Formatting
-
-```bash
-black .
-ruff check .
-```
+- Ports 1337/1338 busy: stop existing processes with `./cleanup.sh`
+- Missing deps: run `uv pip install -e .`
+- Bedrock auth issues: confirm AWS env vars and region
 
 ## License
 
