@@ -36,7 +36,7 @@ if check_port 1337; then
     echo "⚠️  Port 1337 already in use (Refactoring Agent might be running)"
 else
     echo "🔧 Starting Refactoring Agent MCP Server (port 1337)..."
-    uv run python mcp_servers/refactoring-agent/main.py &
+    PYTHONPATH="$PWD:$PYTHONPATH" uv run python mcp_servers/refactoring-agent/main.py &
     REFACTOR_PID=$!
     echo "✅ Refactoring Agent PID: $REFACTOR_PID"
 fi

@@ -36,7 +36,7 @@ def _init_scout(root_directory: str, github_token: Optional[str]) -> CodeScout:
 
 def _convert_usage_paths(usages: list, scout: CodeScout) -> list:
     """Convert cached file paths in usage objects back to GitHub URLs when applicable."""
-    from code_scout.github_helper import GitHubHelper
+    from github_helper import GitHubHelper
     parsed = None
 
     if scout.original_input and "github.com" in scout.original_input.lower():
