@@ -3602,7 +3602,7 @@ requires-dist = [
     { name = "redis", specifier = ">=4.5.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "uvicorn", specifier = ">=0.30.0" },
-    { name = "wizelit-sdk", git = "ssh://git@github.com/duongle-wizeline/wizelit-sdk.git?rev=v0.1.22" },
+    { name = "wizelit-sdk", git = "ssh://git@github.com/duongle-wizeline/wizelit-sdk.git?rev=v0.1.23" },
 ]
 
 [package.metadata.requires-dev]
@@ -4162,8 +4162,8 @@ wheels = [
 
 [[package]]
 name = "wizelit-sdk"
-version = "0.1.21"
-source = { git = "ssh://git@github.com/duongle-wizeline/wizelit-sdk.git?rev=v0.1.22#c659b977bab969b353d963a33bb21f98510ab855" }
+version = "0.1.23"
+source = { git = "ssh://git@github.com/duongle-wizeline/wizelit-sdk.git?rev=v0.1.23#e7a2b99198db3dde3eda56d65903395bb09659ec" }
 dependencies = [
     { name = "asyncpg" },
     { name = "fastmcp" },
