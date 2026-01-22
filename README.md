@@ -88,7 +88,7 @@ python mcp_servers/code-formatter/main.py
 - **Schema Validator Streamable-HTTP**: `http://127.0.0.1:1340/mcp` (POST-based)
 - **Code Formatter**: Stdio-based (process-based)
 
-The Wizelit UI should connect to these FastMCP endpoints using Chainlit's MCP auto-discovery.
+**Important**: All MCP servers must be manually added via Chainlit UI - there is no auto-discovery. See SETUP.md for detailed configuration instructions for each server.
 
 ## Troubleshooting
 
@@ -108,14 +108,6 @@ echo $AWS_ACCESS_KEY_ID
 echo $AWS_SECRET_ACCESS_KEY
 echo $AWS_DEFAULT_REGION
 ```
-```
-
-**Terminal 4** - Code Formatter (Stdio):
-```bash
-python mcp_servers/code-formatter/main.py
-```
-
-## Integration Endpoints
 
 | Agent | Endpoint | Transport |
 |-------|----------|-----------|
@@ -185,18 +177,18 @@ curl -X POST http://127.0.0.1:1340/mcp \
   }'
 ```
 
-### Code Formatter (Stateless, Local)
-Formats Python code:
-```bash
-curl -X POST http://127.0.0.1:1340/mcp \
-  -H "Content-Type: application/json" \
-  -d '{
-    "method": "format_code",
-    "params": {
-      "code": "def foo(x):\n  return x+1"
-    }
-  }'
-```
+### Code Formatter (Stdio, Local)
+Formats Python code. **Note**: All servers must be added via Chainlit UI. Code Formatter uses stdio transport and cannot be tested directly with curl.
+
+To use:
+1. Add all servers via Chainlit UI (see SETUP.md for details)
+2. Use the tools through the Wizelit Platform interface
+
+Available Code Formatter tools:
+- `format_code` - Apply Black-style formatting rules
+- `organize_imports` - Organize and sort import statements
+- `normalize_indentation` - Normalize indentation (default: 4 spaces)
+- `format_all` - Apply all formatting rules in sequence
 
 ## Troubleshooting
 

@@ -17,7 +17,7 @@ dependencies = [
     "crewai>=1.6.1",
     "redis>=4.5.0",
     "uvicorn>=0.30.0",
-    "wizelit-sdk @ file:///Users/vu.vo/Desktop/Wizelit/SDK/wizelit-sdk"
+    "wizelit-sdk @ git+ssh://git@github.com/duongle-wizeline/wizelit-sdk.git@v0.1.21"
 ]
 
 [tool.setuptools.packages.find]

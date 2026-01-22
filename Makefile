@@ -32,7 +32,9 @@ servers:
 	@echo "  python mcp_servers/schema-validator/main.py"
 	@echo ""
 	@echo "Code Formatter (Stdio):"
-	@echo "  python mcp_servers/code-formatter/main.py"
+	@echo "  uv run python mcp_servers/code-formatter/main.py"
+	@echo ""
+	@echo "Note: All servers must be added via Chainlit UI to use"
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
