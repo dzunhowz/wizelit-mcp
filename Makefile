@@ -1,4 +1,4 @@
-.PHONY: help install run dev clean test format code-scout refactoring-agent servers
+.PHONY: help install run dev clean test format code-scout refactoring-agent schema-validator code-formatter servers
 
 help:
 	@echo "Available commands:"
@@ -7,6 +7,8 @@ help:
 	@echo "  make dev        - Start all 4 MCP servers (watch mode not required)"
 	@echo "  make code-scout        - Start Code Scout MCP server standalone (port 1338)"
 	@echo "  make refactoring-agent - Start Refactoring Agent MCP server standalone (port 1337)"
+	@echo "  make schema-validator  - Start Schema Validator MCP server standalone (port 1340)"
+	@echo "  make code-formatter    - Start Code Formatter MCP server standalone (stdio)"
 	@echo "  make servers    - Show how to start servers individually"
 	@echo "  make clean      - Clean cache and temp files"
 	@echo "  make test       - Run tests"
@@ -37,14 +39,29 @@ refactoring-agent:
 	fi
 	PYTHONPATH="$$PWD:$$PYTHONPATH" uv run python mcp_servers/refactoring-agent/main.py
 
+schema-validator:
+	@echo "✔️  Starting Schema Validator Streamable-HTTP MCP Server on port 1340..."
+	@if lsof -i:1340 >/dev/null 2>&1; then \
+		echo "⚠️  Port 1340 already in use. Stop the existing process first."; \
+		exit 1; \
+	fi
+	uv run python mcp_servers/schema-validator/main.py
+
+code-formatter:
+	@echo "📝 Starting Code Formatter MCP Server (Stdio)..."
+	@echo "⚠️  Note: This server must be added via Chainlit UI to use"
+	uv run python mcp_servers/code-formatter/main.py
+
 servers:
 	@echo "Starting individual MCP servers:"
 	@echo ""
-	@echo "Run in separate terminals:"
+	@echo "Run in separate terminals using make commands:"
 	@echo "  make code-scout"
 	@echo "  make refactoring-agent"
+	@echo "  make schema-validator"
+	@echo "  make code-formatter"
 	@echo ""
-	@echo "Or directly:"
+	@echo "Or run directly:"
 	@echo "Code Scout (SSE, port 1338):"
 	@echo "  python mcp_servers/code-scout/server.py"
 	@echo ""
