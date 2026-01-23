@@ -9,15 +9,8 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Optional
 from wizelit_sdk.agent_wrapper import WizelitAgent, Job
-
-try:
-    # Prefer package-relative imports when installed or run via -m
-    from .scanner import CodeScout
-    from .github_helper import GitHubHelper
-except ImportError:
-    # Fallback for running as a loose script when the directory is on sys.path
-    from scanner import CodeScout
-    from github_helper import GitHubHelper
+from .scanner import CodeScout
+from .github_helper import GitHubHelper
 
 # Initialize FastMCP wrapper (SSE transport, port 1338 to avoid clashing with refactoring-agent)
 mcp = WizelitAgent("CodeScoutAgent", transport="sse", port=1338)
