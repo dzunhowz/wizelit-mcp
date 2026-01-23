@@ -14,8 +14,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from github_helper import GitHubHelper, is_github_url
-from github_cache import get_github_cache
+try:
+    # Prefer package-relative imports when available
+    from .github_helper import GitHubHelper, is_github_url
+    from .github_cache import get_github_cache
+except ImportError:
+    # Fallback for direct script execution when the directory is on sys.path
+    from github_helper import GitHubHelper, is_github_url
+    from github_cache import get_github_cache
 
 
 @dataclass

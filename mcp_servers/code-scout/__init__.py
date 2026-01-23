@@ -1,7 +1,14 @@
 """Code Scout MCP Server"""
-from scanner import CodeScout, DependencyNode, SymbolUsage
-from github_helper import GitHubHelper, get_github_content, is_github_url
-from github_cache import get_github_cache, GitHubRepositoryCache
+
+try:
+    from .scanner import CodeScout, DependencyNode, SymbolUsage
+    from .github_helper import GitHubHelper, get_github_content, is_github_url
+    from .github_cache import get_github_cache, GitHubRepositoryCache
+except ImportError:
+    # Fallback for environments loading modules from a plain sys.path entry
+    from scanner import CodeScout, DependencyNode, SymbolUsage
+    from github_helper import GitHubHelper, get_github_content, is_github_url
+    from github_cache import get_github_cache, GitHubRepositoryCache
 
 __all__ = [
     "CodeScout",
