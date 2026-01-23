@@ -7,6 +7,7 @@ Scans local directories or GitHub repositories for symbol usages using AST and g
 from __future__ import annotations
 
 import ast
+import logging
 import os
 import shutil
 import subprocess
@@ -22,6 +23,9 @@ except ImportError:
     # Fallback for direct script execution when the directory is on sys.path
     from github_helper import GitHubHelper, is_github_url
     from github_cache import get_github_cache
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -99,9 +103,12 @@ class CodeScout:
         if self.owns_temp_dir and self.temp_dir and os.path.exists(self.temp_dir):
             try:
                 shutil.rmtree(self.temp_dir)
-            except Exception:
-                # Best-effort cleanup; safe to ignore failure
-                pass
+            except Exception as e:
+                # Best-effort cleanup; log but don't fail
+                logger.warning(
+                    f"Failed to cleanup temporary directory {self.temp_dir}: {e}",
+                    exc_info=True
+                )
             finally:
                 self.temp_dir = None
                 self.owns_temp_dir = False
