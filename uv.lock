@@ -3602,7 +3602,7 @@ requires-dist = [
     { name = "redis", specifier = ">=4.5.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "uvicorn", specifier = ">=0.30.0" },
-    { name = "wizelit-sdk", specifier = ">=0.1.24" }
+    { name = "wizelit-sdk", specifier = ">=0.1.25" },
 ]
 
 [package.metadata.requires-dev]
@@ -4162,7 +4162,7 @@ wheels = [
 
 [[package]]
 name = "wizelit-sdk"
-version = "0.1.24"
+version = "0.1.25"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncpg" },
@@ -4171,25 +4171,10 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/45/5e/9a48128ec7ef79bd78aac6d4e8b1db64ad62f2b65f1a3b7e1e15fe072e4e/wizelit_sdk-0.1.24.tar.gz", hash = "sha256:02d449ce9287deb04dd25fc0d813f303a91d2ee59d6f511555e97f7fcf16d803", size = 138335, upload-time = "2026-01-23T03:21:31.508Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5d/11/57f1d976ee5710b3d1c8e9ff6aff806706a95f1f191a153674d87f25550b/wizelit_sdk-0.1.25.tar.gz", hash = "sha256:c90451d066693fd29bb9d239de1e89c86203d4266478cae079d1bb5382e4475a", size = 138446, upload-time = "2026-01-23T09:02:33.565Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/26/fd163d4b483e0930a453512da8a1b193191931dfe622170467744b1be52d/wizelit_sdk-0.1.24-py3-none-any.whl", hash = "sha256:8f0bb90c30f0bee52da48976d99ea282855e6438116d9bc5dca6d103e4b6b28d", size = 18562, upload-time = "2026-01-23T03:21:28.556Z" },
+    { url = "https://files.pythonhosted.org/packages/29/db/b23c50ec58e941d61be7658bb8accb6eab74214d0b5aabc6444322b5620b/wizelit_sdk-0.1.25-py3-none-any.whl", hash = "sha256:21deb32e490dcf27b2fef58eb589bc9c5e4613ab87c93bb240787b76681e1e96", size = 18569, upload-time = "2026-01-23T09:02:31.33Z" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "asyncpg", specifier = ">=0.26.0" },
-    { name = "black", marker = "extra == 'dev'", specifier = ">=22.0.0" },
-    { name = "build", marker = "extra == 'dev'", specifier = ">=1.0.0" },
-    { name = "fastmcp", specifier = ">=0.1.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
-    { name = "redis", specifier = ">=4.5.0" },
-    { name = "redis", marker = "extra == 'streaming'", specifier = ">=4.5.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
-    { name = "sqlalchemy", specifier = ">=1.4" },
-    { name = "typing-extensions", specifier = ">=4.0.0" },
-]
-provides-extras = ["dev", "streaming"]
 
 [[package]]
 name = "wrapt"
