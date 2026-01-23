@@ -1,9 +1,16 @@
 import asyncio
 import difflib
 import os
+import sys
 import time
 import contextlib
 from typing import Dict, Any
+
+# Ensure utils can be imported
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
 from utils.bedrock_config import normalize_aws_env, resolve_bedrock_model_id
 
 # FastMCP - use published SDK

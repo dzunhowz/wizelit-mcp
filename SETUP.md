@@ -1,6 +1,6 @@
 # Wizelit MCP Setup (MCP-only)
 
-This repo now ships only the two FastMCP servers (no Chainlit UI). Point the Wizelit UI to these endpoints and it will discover the available tools.
+This repo ships 4 MCP servers with different transport modes (no Chainlit UI). Point the Wizelit UI to these endpoints and it will discover the available tools.
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ Key env vars:
 
 ## Run
 
-Start both servers together:
+Start all 4 servers together:
 
 ```bash
 ./start.sh
@@ -37,8 +37,18 @@ Start both servers together:
 Or run manually in separate terminals:
 
 ```bash
-python mcp_servers/code-scout/server.py          # port 1338 (SSE)
-python mcp_servers/refactoring-agent/main.py     # port 1337 (SSE)
+# Terminal 1 - Code Scout (SSE, port 1338)
+python mcp_servers/code-scout/server.py
+
+# Terminal 2 - Refactoring Agent (SSE, port 1337)
+python mcp_servers/refactoring-agent/main.py
+
+# Terminal 3 - Schema Validator (Streamable-HTTP, port 1340)
+python mcp_servers/schema-validator/main.py
+
+# Terminal 4 - Code Formatter (Stdio)
+# Note: This must be added via Chainlit UI, not run standalone
+uv run python mcp_servers/code-formatter/main.py
 ```
 
 Stop stale processes/ports:
@@ -49,15 +59,39 @@ Stop stale processes/ports:
 
 ## Integration
 
-- Refactoring Agent SSE: `http://127.0.0.1:1337/sse`
-- Code Scout SSE: `http://127.0.0.1:1338/sse`
+**All MCP servers must be added via Chainlit UI** - there is no auto-discovery. Configure each server in Chainlit's MCP settings:
 
-The Wizelit UI (in the separate `wizelit` repo) should connect to these FastMCP endpoints.
+### Adding Servers via Chainlit UI
+
+#### 1. Refactoring Agent (SSE)
+- **Name**: `CodeRefactorAgent` (or your preferred name)
+- **Type**: `SSE`
+- **URL**: `http://127.0.0.1:1337/sse`
+
+#### 2. Code Scout (SSE)
+- **Name**: `CodeScoutAgent` (or your preferred name)
+- **Type**: `SSE`
+- **URL**: `http://127.0.0.1:1338/sse`
+
+#### 3. Schema Validator (Streamable-HTTP)
+- **Name**: `SchemaValidator` (or your preferred name)
+- **Type**: `Streamable-HTTP`
+- **URL**: `http://127.0.0.1:1340/mcp`
+
+#### 4. Code Formatter (Stdio)
+- **Name**: `CodeFormatterAgent` (or your preferred name)
+- **Type**: `Stdio`
+- **Command**: `uv`
+- **Arguments**: `run python mcp_servers/code-formatter/main.py`
+- **Working Directory**: `/path/to/sample-mcp-servers` (absolute path to this directory)
+
+**Note**: Make sure the servers are running (via `./start.sh` or individually) before adding them in Chainlit UI.
 
 ## Dev Commands
 
 - `make install` — install deps
-- `make run` — start both MCP servers
+- `make run` — start all 4 MCP servers
+- `make servers` — show individual server commands
 - `make clean` — clear caches
 - `make test` — run tests
 - `make format` — format with black + ruff

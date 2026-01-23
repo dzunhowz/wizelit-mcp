@@ -3602,7 +3602,7 @@ requires-dist = [
     { name = "redis", specifier = ">=4.5.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "uvicorn", specifier = ">=0.30.0" },
-    { name = "wizelit-sdk", specifier = ">=0.1.24" },
+    { name = "wizelit-sdk", specifier = ">=0.1.24" }
 ]
 
 [package.metadata.requires-dev]
@@ -4175,6 +4175,21 @@ sdist = { url = "https://files.pythonhosted.org/packages/45/5e/9a48128ec7ef79bd7
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a4/26/fd163d4b483e0930a453512da8a1b193191931dfe622170467744b1be52d/wizelit_sdk-0.1.24-py3-none-any.whl", hash = "sha256:8f0bb90c30f0bee52da48976d99ea282855e6438116d9bc5dca6d103e4b6b28d", size = 18562, upload-time = "2026-01-23T03:21:28.556Z" },
 ]
+
+[package.metadata]
+requires-dist = [
+    { name = "asyncpg", specifier = ">=0.26.0" },
+    { name = "black", marker = "extra == 'dev'", specifier = ">=22.0.0" },
+    { name = "build", marker = "extra == 'dev'", specifier = ">=1.0.0" },
+    { name = "fastmcp", specifier = ">=0.1.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
+    { name = "redis", specifier = ">=4.5.0" },
+    { name = "redis", marker = "extra == 'streaming'", specifier = ">=4.5.0" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
+    { name = "sqlalchemy", specifier = ">=1.4" },
+    { name = "typing-extensions", specifier = ">=4.0.0" },
+]
+provides-extras = ["dev", "streaming"]
 
 [[package]]
 name = "wrapt"
