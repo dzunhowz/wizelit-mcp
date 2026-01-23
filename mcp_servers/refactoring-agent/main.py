@@ -7,7 +7,7 @@ from typing import Dict, Any
 from utils.bedrock_config import normalize_aws_env, resolve_bedrock_model_id
 
 # FastMCP - use published SDK
-from wizelit_sdk.agent_wrapper import WizelitAgentWrapper, Job
+from wizelit_sdk.agent_wrapper import WizelitAgent, Job
 
 # Database (optional - for persistence)
 try:
@@ -25,7 +25,7 @@ from crewai.process import Process
 
 # Initialize FastMCP with database manager and streaming
 enable_streaming = os.getenv("ENABLE_LOG_STREAMING", "true").lower() == "true"
-mcp = WizelitAgentWrapper(
+mcp = WizelitAgent(
     "RefactoringCrewAgent",
     port=1337,
     transport="sse",

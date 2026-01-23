@@ -17,7 +17,7 @@ dependencies = [
     "crewai>=1.6.1",
     "redis>=4.5.0",
     "uvicorn>=0.30.0",
-    "wizelit-sdk>=0.1.23"
+    "wizelit-sdk>=0.1.24",
 ]
 
 [tool.setuptools.packages.find]

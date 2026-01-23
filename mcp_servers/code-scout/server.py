@@ -20,12 +20,12 @@ MCP_SERVERS_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 if MCP_SERVERS_ROOT not in sys.path:
     sys.path.insert(0, MCP_SERVERS_ROOT)
 
-from wizelit_sdk.agent_wrapper import WizelitAgentWrapper, Job
+from wizelit_sdk.agent_wrapper import WizelitAgent, Job
 
 from scanner import CodeScout
 
 # Initialize FastMCP wrapper (SSE transport, port 1338 to avoid clashing with refactoring-agent)
-mcp = WizelitAgentWrapper("CodeScoutAgent", transport="sse", port=1338)
+mcp = WizelitAgent("CodeScoutAgent", transport="sse", port=1338)
 
 
 def _init_scout(root_directory: str, github_token: Optional[str]) -> CodeScout:
