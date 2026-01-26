@@ -18,11 +18,15 @@ UNSUPPORTED_ON_DEMAND_MODEL_IDS: Final[Set[str]] = {
 }
 
 
-def normalize_aws_env(*, default_region: str = "us-east-1") -> str:
+def normalize_aws_env(*, default_region: str = None) -> str:
     """
     Normalize environment variables so different libraries pick them up consistently.
     Returns the resolved AWS region name.
     """
+    # Use parameter, env var, or hardcoded default
+    if default_region is None:
+        default_region = os.getenv("DEFAULT_AWS_REGION", "us-east-1")
+    
     # Region: support both AWS_* conventions and this repo's REGION_NAME.
     region = (
         os.getenv("AWS_DEFAULT_REGION")
@@ -43,7 +47,7 @@ def normalize_aws_env(*, default_region: str = "us-east-1") -> str:
 
 def resolve_bedrock_model_id(
     *,
-    fallback_model_id: str = "anthropic.claude-3-haiku-20240307-v1:0",
+    fallback_model_id: str = None,
 ) -> str:
     """
     Resolve the Bedrock model identifier to use.
@@ -52,6 +56,10 @@ def resolve_bedrock_model_id(
     - Otherwise use CHAT_MODEL_ID unless it is known to be unsupported for on-demand,
       in which case fall back to a safe on-demand model.
     """
+    # Use parameter, env var, or hardcoded default
+    if fallback_model_id is None:
+        fallback_model_id = os.getenv("DEFAULT_BEDROCK_MODEL", "anthropic.claude-3-haiku-20240307-v1:0")
+    
     inference_profile = (
         os.getenv("BEDROCK_INFERENCE_PROFILE_ARN")
         or os.getenv("BEDROCK_INFERENCE_PROFILE_ID")

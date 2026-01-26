@@ -56,7 +56,7 @@ class CodeScout:
     Supports both local directories and GitHub repositories.
     """
 
-    def __init__(self, root_directory: str, github_token: Optional[str] = None, use_cache: bool = True):
+    def __init__(self, root_directory: str, github_token: Optional[str] = None, use_cache: bool = None):
         """
         Initialize Code Scout.
 
@@ -71,6 +71,10 @@ class CodeScout:
         self.github_helper = GitHubHelper(github_token) if self.is_github else None
         self.temp_dir: Optional[str] = None
         self.owns_temp_dir = False  # Track if we created the temp dir
+        
+        # Default use_cache to True, can be overridden by env var or parameter
+        if use_cache is None:
+            use_cache = os.getenv("CODE_SCOUT_USE_CACHE", "true").lower() == "true"
 
         if self.is_github:
             if use_cache:

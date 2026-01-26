@@ -21,14 +21,14 @@ class GitHubRepositoryCache:
 
     def __init__(
         self,
-        cache_dir: str = "/tmp/github_cache",
-        max_age_hours: int = 24,
-        max_cache_size_mb: int = 5000,
+        cache_dir: str = None,
+        max_age_hours: int = None,
+        max_cache_size_mb: int = None,
     ):
-        self.cache_dir = Path(cache_dir)
+        self.cache_dir = Path(cache_dir or os.getenv("GITHUB_CACHE_DIR", "/tmp/github_cache"))
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.max_age = timedelta(hours=max_age_hours)
-        self.max_cache_size_mb = max_cache_size_mb
+        self.max_age = timedelta(hours=max_age_hours or int(os.getenv("GITHUB_CACHE_MAX_AGE_HOURS", "24")))
+        self.max_cache_size_mb = max_cache_size_mb or int(os.getenv("GITHUB_CACHE_MAX_SIZE_MB", "5000"))
         self.lock = threading.Lock()
         self._cache_metadata: Dict[str, dict] = {}
 
