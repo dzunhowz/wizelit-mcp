@@ -3,6 +3,7 @@ Code Formatter MCP Server (Stdio transport)
 Fast lightweight code formatting using AST analysis.
 Demonstrates Stdio transport compatibility (local process execution).
 """
+
 import os
 import sys
 from typing import Dict, Any, Optional
@@ -12,7 +13,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-from wizelit_sdk.agent_wrapper import WizelitAgentWrapper
+from wizelit_sdk.agent_wrapper import WizelitAgent
 
 # Import formatter from current directory
 CURRENT_DIR = os.path.dirname(__file__)
@@ -21,7 +22,7 @@ from formatter import CodeFormatter
 
 # Initialize FastMCP wrapper with Stdio transport
 # Stdio is perfect for lightweight local agents that can be spawned by parent process
-mcp = WizelitAgentWrapper(
+mcp = WizelitAgent(
     "CodeFormatterAgent",
     transport="stdio",
 )
@@ -34,21 +35,21 @@ mcp = WizelitAgentWrapper(
         "mode": "formatted",
         "extract_path": "content[0].text",
         "content_type": "json",
-        "template": "### ✅ Code Formatted Successfully\n\n```json\n{value}\n```"
-    }
+        "template": "### ✅ Code Formatted Successfully\n\n```json\n{value}\n```",
+    },
 )
 async def format_code(code: str) -> Dict[str, Any]:
     """
     Format Python code with Black-style rules.
-    
+
     Performs:
     - Remove trailing whitespace
     - Normalize blank lines (max 2 consecutive)
     - Ensure single trailing newline
-    
+
     Args:
         code: Python source code to format
-        
+
     Returns:
         Dict with formatted code and statistics
     """
@@ -63,21 +64,21 @@ async def format_code(code: str) -> Dict[str, Any]:
         "mode": "formatted",
         "extract_path": "content[0].text",
         "content_type": "json",
-        "template": "### ✅ Imports Organized\n\n```json\n{value}\n```"
-    }
+        "template": "### ✅ Imports Organized\n\n```json\n{value}\n```",
+    },
 )
 async def organize_imports(code: str) -> Dict[str, Any]:
     """
     Organize Python import statements.
-    
+
     Organizes imports into:
     1. Standard library imports
     2. Third-party imports
     3. Local imports
-    
+
     Args:
         code: Python source code
-        
+
     Returns:
         Dict with organized code and import statistics
     """
@@ -92,8 +93,8 @@ async def organize_imports(code: str) -> Dict[str, Any]:
         "mode": "formatted",
         "extract_path": "content[0].text",
         "content_type": "json",
-        "template": "### ✅ Indentation Normalized\n\n```json\n{value}\n```"
-    }
+        "template": "### ✅ Indentation Normalized\n\n```json\n{value}\n```",
+    },
 )
 async def normalize_indentation(
     code: str,
@@ -101,11 +102,11 @@ async def normalize_indentation(
 ) -> Dict[str, Any]:
     """
     Normalize indentation in Python code.
-    
+
     Args:
         code: Python source code
         indent_size: Target indentation size (default: 4 spaces)
-        
+
     Returns:
         Dict with reformatted code
     """
@@ -120,47 +121,47 @@ async def normalize_indentation(
         "mode": "formatted",
         "extract_path": "content[0].text",
         "content_type": "json",
-        "template": "### ✅ Code Fully Formatted\n\n```json\n{value}\n```"
-    }
+        "template": "### ✅ Code Fully Formatted\n\n```json\n{value}\n```",
+    },
 )
 async def format_all(code: str, indent_size: int = 4) -> Dict[str, Any]:
     """
     Apply all formatting rules in sequence.
-    
+
     Steps:
     1. Organize imports
     2. Normalize indentation
     3. Apply Black-style formatting
-    
+
     Args:
         code: Python source code
         indent_size: Target indentation size
-        
+
     Returns:
         Dict with fully formatted code
     """
     # Step 1: Organize imports
     result1 = CodeFormatter.normalize_imports(code)
-    if not result1['success']:
+    if not result1["success"]:
         return result1
-    
-    code = result1['formatted_code']
-    
+
+    code = result1["formatted_code"]
+
     # Step 2: Normalize indentation
     result2 = CodeFormatter.indent_code(code, indent_size)
-    if not result2['success']:
+    if not result2["success"]:
         return result2
-    
-    code = result2['formatted_code']
-    
+
+    code = result2["formatted_code"]
+
     # Step 3: Apply Black-style formatting
     result3 = CodeFormatter.format_with_black_rules(code)
-    if not result3['success']:
+    if not result3["success"]:
         return result3
-    
+
     return {
         "success": True,
-        "formatted_code": result3['formatted_code'],
+        "formatted_code": result3["formatted_code"],
         "steps_applied": ["organize_imports", "normalize_indentation", "format_code"],
         "import_organization": result1,
         "indentation_normalization": result2,
