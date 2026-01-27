@@ -12,7 +12,7 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-from wizelit_sdk.agent_wrapper import WizelitAgentWrapper
+from wizelit_sdk.agent_wrapper import WizelitAgent
 
 # Import validator from current directory
 CURRENT_DIR = os.path.dirname(__file__)
@@ -21,7 +21,7 @@ from validator import SchemaValidator
 
 # Initialize FastMCP wrapper with Streamable-HTTP transport (port 1340)
 # FastMCP exposes streamable-http at /mcp endpoint
-mcp = WizelitAgentWrapper(
+mcp = WizelitAgent(
     "SchemaValidatorStreamableHTTP",
     transport="streamable-http",
     port=1340
@@ -30,7 +30,13 @@ mcp = WizelitAgentWrapper(
 
 @mcp.ingest(
     is_long_running=False,
-    description="Validate Python function signature. CRITICAL: expected_params must be JSON string like '[\"x\", \"y\"]'"
+    description="Validate Python function signature. CRITICAL: expected_params must be JSON string like '[\"x\", \"y\"]'",
+    response_handling={
+        "mode": "formatted",
+        "extract_path": "content[0].text",
+        "content_type": "json",
+        "template": "### ✅ Function Signature Validation\n\n```json\n{value}\n```",
+    },
 )
 async def validate_function_signature(
     code: str,
@@ -77,7 +83,13 @@ async def validate_function_signature(
 
 @mcp.ingest(
     is_long_running=False,
-    description="Validate Python class structure. CRITICAL: expected_methods must be JSON string like '[\"method1\", \"method2\"]'"
+    description="Validate Python class structure. CRITICAL: expected_methods must be JSON string like '[\"method1\", \"method2\"]'",
+    response_handling={
+        "mode": "formatted",
+        "extract_path": "content[0].text",
+        "content_type": "json",
+        "template": "### ✅ Class Structure Validation\n\n```json\n{value}\n```",
+    },
 )
 async def validate_class_structure(
     code: str,
@@ -117,7 +129,13 @@ async def validate_class_structure(
 
 @mcp.ingest(
     is_long_running=False,
-    description="Analyze Python code quality metrics (type hints, docstrings, etc)."
+    description="Analyze Python code quality metrics (type hints, docstrings, etc).",
+    response_handling={
+        "mode": "formatted",
+        "extract_path": "content[0].text",
+        "content_type": "json",
+        "template": "### ✅ Code Quality Analysis\n\n```json\n{value}\n```",
+    },
 )
 async def analyze_code_quality(code: str) -> Dict[str, Any]:
     """
