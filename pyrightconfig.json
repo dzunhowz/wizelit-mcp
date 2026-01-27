@@ -1,0 +1,11 @@
+{
+  "typeCheckingMode": "standard",
+  "pythonVersion": "3.12",
+  "include": ["mcp_servers/**/*.py", "utils/**/*.py"],
+  "exclude": [
+    "**/.venv",
+    "**/__pycache__",
+    "wizelit_mcp.egg-info",
+    "sample_mcp_servers.egg-info"
+  ]
+}

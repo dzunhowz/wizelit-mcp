@@ -26,7 +26,7 @@ if check_port 1338; then
     echo "⚠️  Port 1338 already in use (Code Scout might be running)"
 else
     echo "🔍 Starting Code Scout MCP Server (port 1338, SSE)..."
-    uv run python mcp_servers/code-scout/server.py &
+    uv run python -m mcp_servers.code_scout.server &
     CODE_SCOUT_PID=$!
     echo "✅ Code Scout PID: $CODE_SCOUT_PID"
 fi
