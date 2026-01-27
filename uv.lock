@@ -3577,6 +3577,7 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "redis" },
     { name = "requests" },
+    { name = "typeguard" },
     { name = "uvicorn" },
     { name = "wizelit-sdk" },
 ]
@@ -3601,8 +3602,9 @@ requires-dist = [
     { name = "python-dotenv", specifier = ">=1.0.1" },
     { name = "redis", specifier = ">=4.5.0" },
     { name = "requests", specifier = ">=2.32.3" },
+    { name = "typeguard", specifier = ">=4.3.0" },
     { name = "uvicorn", specifier = ">=0.30.0" },
-    { name = "wizelit-sdk", specifier = ">=0.1.26" },
+    { name = "wizelit-sdk", specifier = ">=0.1.28" },
 ]
 
 [package.metadata.requires-dev]
@@ -3858,6 +3860,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/31/e9/2ecbe56826759845a7c21d80aa28187865ea62bc9757b056f6cbc06f78ed/ty-0.0.12-py3-none-win32.whl", hash = "sha256:a91c24fd75c0f1796d8ede9083e2c0ec96f106dbda73a09fe3135e075d31f742", size = 9140115, upload-time = "2026-01-14T22:30:38.903Z" },
     { url = "https://files.pythonhosted.org/packages/5d/6d/d9531eff35a5c0ec9dbc10231fac21f9dd6504814048e81d6ce1c84dc566/ty-0.0.12-py3-none-win_amd64.whl", hash = "sha256:df151894be55c22d47068b0f3b484aff9e638761e2267e115d515fcc9c5b4a4b", size = 9884532, upload-time = "2026-01-14T22:30:25.112Z" },
     { url = "https://files.pythonhosted.org/packages/e9/f3/20b49e75967023b123a221134548ad7000f9429f13fdcdda115b4c26305f/ty-0.0.12-py3-none-win_arm64.whl", hash = "sha256:cea99d334b05629de937ce52f43278acf155d3a316ad6a35356635f886be20ea", size = 9313974, upload-time = "2026-01-14T22:30:27.44Z" },
+]
+
+[[package]]
+name = "typeguard"
+version = "4.4.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c7/68/71c1a15b5f65f40e91b65da23b8224dad41349894535a97f63a52e462196/typeguard-4.4.4.tar.gz", hash = "sha256:3a7fd2dffb705d4d0efaed4306a704c89b9dee850b688f060a8b1615a79e5f74", size = 75203, upload-time = "2025-06-18T09:56:07.624Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1b/a9/e3aee762739c1d7528da1c3e06d518503f8b6c439c35549b53735ba52ead/typeguard-4.4.4-py3-none-any.whl", hash = "sha256:b5f562281b6bfa1f5492470464730ef001646128b180769880468bd84b68b09e", size = 34874, upload-time = "2025-06-18T09:56:05.999Z" },
 ]
 
 [[package]]
@@ -4162,18 +4176,19 @@ wheels = [
 
 [[package]]
 name = "wizelit-sdk"
-version = "0.1.26"
+version = "0.1.28"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "asyncpg" },
     { name = "fastmcp" },
     { name = "redis" },
     { name = "sqlalchemy" },
+    { name = "typeguard" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/95/fc/c58a5ded02e7aadf985775a95554d7ca549e9e4c8ea1ffd98b79402a4d12/wizelit_sdk-0.1.26.tar.gz", hash = "sha256:23cb2e80be54b0de38c50340bed194e7fb889b389aa771838e51234d14a0ebc9", size = 138391, upload-time = "2026-01-23T10:39:12.073Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/05/27/eb1ec9c10c60e8f7ea196675f15fbc5cd815bb30657c1903d4fe0c3a4f53/wizelit_sdk-0.1.28.tar.gz", hash = "sha256:ed9182c687c66ba8e12318cb319fd790274a1aca0179594a9370e999f0c83e07", size = 140154, upload-time = "2026-01-26T10:15:19.739Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e9/2e/b5e0eb4fb2e99909354d69b1de2078b4ed27d1253daaa2c58ca0085c3603/wizelit_sdk-0.1.26-py3-none-any.whl", hash = "sha256:c20224b75ec335e629a38d9374eef3036bc221d654c7fb3fbf6286b914422bc1", size = 18315, upload-time = "2026-01-23T10:39:09.937Z" },
+    { url = "https://files.pythonhosted.org/packages/2b/51/7b93fadecfa84b609b7e0e52811fa3d331efda5f28906ceb4089183ede45/wizelit_sdk-0.1.28-py3-none-any.whl", hash = "sha256:3b69bd328980ff5b338a29923ad5c003eb89621fc6522b49ab961b894551e588", size = 20014, upload-time = "2026-01-26T10:15:18.159Z" },
 ]
 
 [[package]]

@@ -29,7 +29,7 @@ code-scout:
 		echo "⚠️  Port 1338 already in use. Stop the existing process first."; \
 		exit 1; \
 	fi
-	uv run python mcp_servers/code-scout/server.py
+	uv run python -m mcp_servers.code_scout.server
 
 refactoring-agent:
 	@echo "🔧 Starting Refactoring Agent MCP Server on port 1337..."
