@@ -40,7 +40,7 @@ if check_port 1338; then
 fi
 
 echo "🚀 Starting Code Scout MCP Server on port 1338..."
-uv run python mcp_servers/code-scout/server.py
+uv run python -m mcp_servers.code_scout.server
 
 # Note: No background mode - runs in foreground
 # Press Ctrl+C to stop the server

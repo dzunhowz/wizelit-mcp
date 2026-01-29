@@ -9,6 +9,7 @@ from dataclasses import asdict
 from pathlib import Path
 from typing import Optional, Dict, Any
 from wizelit_sdk.agent_wrapper import WizelitAgent, Job
+from ..exceptions import CodeScanError, RepositoryError, SymbolNotFoundError
 from .scanner import CodeScout
 from .github_helper import GitHubHelper
 
@@ -105,17 +106,21 @@ async def scan_directory(
 ) -> dict[str, list[Any]]:
     """
     Scans a directory or GitHub repo for Python files and symbol usages.
-    
+
     Args:
         root_directory: Path to the directory or GitHub repo URL to scan
         pattern: File pattern to match (default: "*.py")
         github_token: Optional GitHub token for accessing private repositories
-        
+
     Returns:
         Dictionary mapping symbols to their usage locations
     """
     def _run():
-        scout = _init_scout(root_directory, github_token)
+        try:
+            scout = _init_scout(root_directory, github_token)
+        except Exception as e:
+            raise RepositoryError(root_directory, "initialization", str(e))
+
         try:
             result = scout.scan_directory(pattern)
             converted = {}
@@ -123,6 +128,8 @@ async def scan_directory(
                 converted_usages = _convert_usage_paths(usages, scout)
                 converted[symbol] = converted_usages
             return converted
+        except Exception as e:
+            raise CodeScanError(f"Scan failed for pattern {pattern}", str(e))
         finally:
             scout.cleanup()
 
@@ -141,13 +148,13 @@ async def find_symbol(
 ) -> list[Any]:
     """
     Finds all usages of a symbol in the scanned codebase.
-    
+
     Args:
         root_directory: Path to the directory or GitHub repo URL to scan
         symbol_name: Name of the symbol to find
         pattern: File pattern to match (default: "*.py")
         github_token: Optional GitHub token for accessing private repositories
-        
+
     Returns:
         List of usage locations for the specified symbol
     """
@@ -174,13 +181,13 @@ async def analyze_impact(
 ) -> dict[str, Any]:
     """
     Analyzes the impact of changing a symbol in the codebase.
-    
+
     Args:
         root_directory: Path to the directory or GitHub repo URL to scan
         symbol_name: Name of the symbol to analyze
         pattern: File pattern to match (default: "*.py")
         github_token: Optional GitHub token for accessing private repositories
-        
+
     Returns:
         Impact analysis results for the specified symbol
     """
@@ -323,14 +330,14 @@ async def visualize_dependency_graph(
 ) -> str:
     """
     Generate a Mermaid graph diagram from the dependency graph.
-    
+
     Args:
         target: Path to the directory or GitHub repo URL to analyze
         pattern: File pattern to match (default: "*.py")
         github_token: Optional GitHub token for accessing private repositories
         max_nodes: Maximum number of nodes to include (default: 50)
         show_files: If True, include file paths in node labels
-        
+
     Returns:
         Mermaid markdown string for graph visualization
     """
@@ -339,12 +346,12 @@ async def visualize_dependency_graph(
         try:
             if not scout.symbol_usages:
                 scout.scan_directory(pattern)
-            
+
             graph = scout.build_dependency_graph()
-            
+
             if not graph:
                 return "No dependency graph data found. Try scanning the directory first."
-            
+
             # Convert DependencyNode objects to dicts
             graph_dicts: Dict[str, Dict[str, Any]] = {}
             for symbol, node in graph.items():
@@ -356,7 +363,7 @@ async def visualize_dependency_graph(
                 else:
                     # Fallback: convert to dict and cast
                     node_dict = dict(node)  # type: ignore[arg-type]
-                
+
                 # Convert file paths for GitHub repos
                 if scout.original_input and "github.com" in scout.original_input.lower():
                     parsed = GitHubHelper.parse_github_url(scout.original_input)
@@ -376,15 +383,15 @@ async def visualize_dependency_graph(
                             )
                         except Exception:
                             pass
-                
+
                 graph_dicts[symbol] = node_dict
-            
+
             # Filter to most interesting nodes (those with dependencies or dependents)
             interesting_nodes = {
                 symbol: node for symbol, node in graph_dicts.items()
                 if node.get("dependencies") or node.get("dependents")
             }
-            
+
             # Limit number of nodes if too many
             if len(interesting_nodes) > max_nodes:
                 # Prioritize nodes with most connections
@@ -394,16 +401,16 @@ async def visualize_dependency_graph(
                     reverse=True
                 )
                 interesting_nodes = dict(sorted_nodes[:max_nodes])
-            
+
             # Build Mermaid graph
             lines = ["```mermaid", "graph TD"]
-            
+
             # Add nodes with descriptions
             node_ids = {}
             for idx, (symbol, node) in enumerate(interesting_nodes.items()):
                 node_id = f"N{idx}"
                 node_ids[symbol] = node_id
-                
+
                 # Create label
                 if show_files:
                     file_path = node.get("file_path", "")
@@ -414,11 +421,11 @@ async def visualize_dependency_graph(
                     label = f"{symbol}<br/><small>{file_name}</small>"
                 else:
                     label = symbol
-                
+
                 # Determine node shape based on connections
                 dep_count = len(node.get("dependencies", []))
                 dependent_count = len(node.get("dependents", []))
-                
+
                 if dep_count == 0 and dependent_count > 0:
                     # Source node (no deps, has dependents)
                     lines.append(f'    {node_id}["{label}"]')
@@ -434,18 +441,18 @@ async def visualize_dependency_graph(
                 else:
                     # Regular node
                     lines.append(f'    {node_id}["{label}"]')
-            
+
             # Add edges (dependencies)
             for symbol, node in interesting_nodes.items():
                 if symbol not in node_ids:
                     continue
-                    
+
                 source_id = node_ids[symbol]
                 for dep in node.get("dependencies", []):
                     if dep in node_ids:
                         target_id = node_ids[dep]
                         lines.append(f"    {source_id} --> {target_id}")
-            
+
             lines.append("```")
             lines.append("")
             lines.append("**Legend:**")
@@ -454,22 +461,22 @@ async def visualize_dependency_graph(
             lines.append("- 🟡 Yellow diamonds: Hub nodes (highly connected, 3+ connections)")
             lines.append("- ⬜ White rectangles: Regular nodes")
             lines.append("")
-            
+
             # Add statistics
             total_symbols = len(interesting_nodes)
             total_edges = sum(len(node.get("dependencies", [])) for node in interesting_nodes.values())
-            
+
             lines.append(f"**Statistics:**")
             lines.append(f"- Total symbols shown: {total_symbols}")
             lines.append(f"- Total dependencies: {total_edges}")
-            
+
             if len(graph) > len(interesting_nodes):
                 lines.append(f"- Note: {len(graph) - len(interesting_nodes)} isolated symbols hidden")
-            
+
             return "\n".join(lines)
         finally:
             scout.cleanup()
-    
+
     return await asyncio.to_thread(_run)
 
 
