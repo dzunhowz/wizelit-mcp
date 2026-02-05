@@ -1,0 +1,103 @@
+name: Deploy MCP Servers
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Allow manual trigger
+    inputs:
+      server:
+        description: 'Server to deploy (all, code-scout, refactoring-agent, schema-validator)'
+        required: false
+        default: 'all'
+
+env:
+  AWS_REGION: ap-southeast-2
+  ECR_REPOSITORY: wizelit-mcp
+  ECS_CLUSTER: wizelit-mcp-cluster
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        server: [code-scout, refactoring-agent, schema-validator]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Skip if single server deploy
+        if: github.event.inputs.server != 'all' && github.event.inputs.server != '' && github.event.inputs.server != matrix.server
+        run: echo "Skipping ${{ matrix.server }} - deploying only ${{ github.event.inputs.server }}"
+
+      - name: Configure AWS credentials
+        if: github.event.inputs.server == 'all' || github.event.inputs.server == '' || github.event.inputs.server == matrix.server
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        if: github.event.inputs.server == 'all' || github.event.inputs.server == '' || github.event.inputs.server == matrix.server
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image
+        if: github.event.inputs.server == 'all' || github.event.inputs.server == '' || github.event.inputs.server == matrix.server
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+          SERVER: ${{ matrix.server }}
+        run: |
+          # Build the Docker image
+          docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$SERVER-$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$SERVER-$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$SERVER-latest
+          
+          # Push both tags
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SERVER-$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SERVER-latest
+          
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$SERVER-$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Get ECS service name
+        if: github.event.inputs.server == 'all' || github.event.inputs.server == '' || github.event.inputs.server == matrix.server
+        id: get-service
+        env:
+          SERVER: ${{ matrix.server }}
+        run: |
+          # Map server name to service name pattern
+          case "$SERVER" in
+            "code-scout") PATTERN="codescout" ;;
+            "refactoring-agent") PATTERN="refactoringagent" ;;
+            "schema-validator") PATTERN="schemavalidator" ;;
+          esac
+          
+          SERVICE_ARN=$(aws ecs list-services --cluster $ECS_CLUSTER --query 'serviceArns[]' --output text | tr '\t' '\n' | grep -i "$PATTERN" | head -1)
+          echo "service_arn=$SERVICE_ARN" >> $GITHUB_OUTPUT
+
+      - name: Deploy to ECS
+        if: (github.event.inputs.server == 'all' || github.event.inputs.server == '' || github.event.inputs.server == matrix.server) && steps.get-service.outputs.service_arn != ''
+        run: |
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service ${{ steps.get-service.outputs.service_arn }} \
+            --force-new-deployment \
+            --region $AWS_REGION
+
+      - name: Wait for deployment
+        if: (github.event.inputs.server == 'all' || github.event.inputs.server == '' || github.event.inputs.server == matrix.server) && steps.get-service.outputs.service_arn != ''
+        run: |
+          echo "Waiting for ${{ matrix.server }} deployment to stabilize..."
+          aws ecs wait services-stable \
+            --cluster $ECS_CLUSTER \
+            --services ${{ steps.get-service.outputs.service_arn }} \
+            --region $AWS_REGION
+          echo "✅ ${{ matrix.server }} deployment completed!"

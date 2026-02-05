@@ -31,10 +31,13 @@ from crewai.llm import LLM
 from crewai.process import Process
 
 # Initialize FastMCP with database manager and streaming
+# Port can be overridden via MCP_SERVER_PORT env var (used by Docker entrypoint for proxy setup)
+_default_port = 1337
+_server_port = int(os.getenv("MCP_SERVER_PORT", str(_default_port)))
 enable_streaming = os.getenv("ENABLE_LOG_STREAMING", "true").lower() == "true"
 mcp = WizelitAgent(
     "RefactoringCrewAgent",
-    port=1337,
+    port=_server_port,
     transport="sse",
     db_manager=db_manager,
     enable_streaming=enable_streaming,

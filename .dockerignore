@@ -1,0 +1,73 @@
+# =============================================================================
+# Wizelit MCP Servers - Docker Ignore
+# =============================================================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv
+venv
+ENV
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov
+.tox
+
+# Build
+*.egg-info
+dist
+build
+
+# CDK
+cdk/
+cdk.out
+
+# Local files
+.env
+.env.*
+*.local
+
+# Documentation (not needed in container)
+*.md
+!README.md
+docs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temp files
+tmp/
+temp/
+*.tmp
+
+# Scripts not needed in container
+start.sh
+start_agents_ngrok.sh
+start-*.sh
+quickstart.sh
+cleanup.sh
+Makefile
+
+# GitHub workflows
+.github/

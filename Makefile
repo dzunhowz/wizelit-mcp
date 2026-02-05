@@ -1,9 +1,10 @@
-.PHONY: help install run dev clean test format code-scout refactoring-agent schema-validator code-formatter servers
+.PHONY: help install run dev clean test format code-scout refactoring-agent schema-validator code-formatter servers ngrok
 
 help:
 	@echo "Available commands:"
 	@echo "  make install    - Install dependencies"
 	@echo "  make run        - Start all 4 MCP servers"
+	@echo "  make ngrok      - Start all 4 MCP servers with ngrok tunnels"
 	@echo "  make dev        - Start all 4 MCP servers (watch mode not required)"
 	@echo "  make code-scout        - Start Code Scout MCP server standalone (port 1338)"
 	@echo "  make refactoring-agent - Start Refactoring Agent MCP server standalone (port 1337)"
@@ -22,6 +23,10 @@ run:
 
 dev:
 	./start.sh
+
+ngrok:
+	@echo "🌐 Starting all MCP servers with ngrok tunnels..."
+	./start_agents_ngrok.sh
 
 code-scout:
 	@echo "🔍 Starting Code Scout MCP Server on port 1338..."

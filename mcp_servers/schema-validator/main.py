@@ -19,12 +19,15 @@ CURRENT_DIR = os.path.dirname(__file__)
 sys.path.insert(0, CURRENT_DIR)
 from validator import SchemaValidator
 
-# Initialize FastMCP wrapper with Streamable-HTTP transport (port 1340)
+# Initialize FastMCP wrapper with Streamable-HTTP transport
 # FastMCP exposes streamable-http at /mcp endpoint
+# Port can be overridden via MCP_SERVER_PORT env var (used by Docker entrypoint for proxy setup)
+_default_port = 1340
+_server_port = int(os.getenv("MCP_SERVER_PORT", str(_default_port)))
 mcp = WizelitAgent(
     "SchemaValidatorStreamableHTTP",
     transport="streamable-http",
-    port=1340
+    port=_server_port
 )
 
 

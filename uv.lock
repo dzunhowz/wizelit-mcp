@@ -3566,6 +3566,7 @@ name = "sample-mcp-servers"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "aiohttp" },
     { name = "boto3" },
     { name = "crewai" },
     { name = "langchain" },
@@ -3591,6 +3592,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "aiohttp", specifier = ">=3.9.0" },
     { name = "boto3", specifier = ">=1.42.5" },
     { name = "crewai", specifier = ">=1.6.1" },
     { name = "langchain", specifier = ">=1.1.3" },

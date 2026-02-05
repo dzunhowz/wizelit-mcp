@@ -5,16 +5,33 @@ Supports local directories and GitHub repositories.
 """
 
 import asyncio
+import os
+import sys
 from dataclasses import asdict
 from pathlib import Path
 from typing import Optional, Dict, Any
-from wizelit_sdk.agent_wrapper import WizelitAgent, Job
-from ..exceptions import CodeScanError, RepositoryError, SymbolNotFoundError
-from .scanner import CodeScout
-from .github_helper import GitHubHelper
 
-# Initialize FastMCP wrapper (SSE transport, port 1338 to avoid clashing with refactoring-agent)
-mcp = WizelitAgent("CodeScoutAgent", transport="sse", port=1338)
+# Ensure mcp_servers package can be imported (for absolute imports)
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
+from wizelit_sdk.agent_wrapper import WizelitAgent, Job
+from mcp_servers.exceptions import CodeScanError, RepositoryError, SymbolNotFoundError
+
+# Try relative import first (when run as module), fallback to absolute (when run directly)
+try:
+    from .scanner import CodeScout
+    from .github_helper import GitHubHelper
+except ImportError:
+    from scanner import CodeScout
+    from github_helper import GitHubHelper
+
+# Initialize FastMCP wrapper (SSE transport)
+# Port can be overridden via MCP_SERVER_PORT env var (used by Docker entrypoint for proxy setup)
+_default_port = 1338
+_server_port = int(os.getenv("MCP_SERVER_PORT", str(_default_port)))
+mcp = WizelitAgent("CodeScoutAgent", transport="sse", port=_server_port)
 
 
 def _init_scout(root_directory: str, github_token: Optional[str]) -> CodeScout:
