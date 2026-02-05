@@ -84,10 +84,18 @@ async def proxy_handler(request: web.Request) -> web.StreamResponse:
     print(f"[Proxy] {request.method} {original_path} → {new_path}", flush=True)
     
     # Handle SSE (Server-Sent Events)
-    if "text/event-stream" in request.headers.get("Accept", ""):
+    # SSE uses GET requests to /sse endpoint, while streamable-http uses POST to /mcp
+    # Check both the Accept header AND the method/path to distinguish them
+    is_sse = (
+        request.method.upper() == "GET"
+        and ("/sse" in new_path or new_path.endswith("/sse"))
+        and "text/event-stream" in request.headers.get("Accept", "")
+    )
+    
+    if is_sse:
         return await proxy_sse(request, backend_url, path_prefix)
     
-    # Regular HTTP proxy
+    # Regular HTTP proxy (handles POST for streamable-http, GET for other requests)
     timeout = ClientTimeout(total=300)
     async with ClientSession(timeout=timeout) as session:
         # Forward headers (excluding hop-by-hop headers)

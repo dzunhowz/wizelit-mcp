@@ -319,13 +319,15 @@ class McpServersStack(Stack):
             # Target Group with path-based routing
             # Note: SSE/MCP endpoints don't return 200 OK for simple GET requests
             # Using permissive health check that accepts various status codes
+            # Use the health_path from server config if available, otherwise use root
+            health_check_path = server.get("health_path", "/")
             target_group = listener.add_targets(
                 f"{server['name'].replace('-', '')}Target",
                 port=server["port"],
                 protocol=elbv2.ApplicationProtocol.HTTP,
                 targets=[service],
                 health_check=elbv2.HealthCheck(
-                    path="/",  # Root path - will get some response
+                    path=health_check_path,  # Use server-specific health path
                     interval=Duration.seconds(60),
                     timeout=Duration.seconds(30),
                     healthy_threshold_count=2,
